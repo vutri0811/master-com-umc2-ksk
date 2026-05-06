@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cẩm nang Giao tiếp Y tế Chuyên nghiệp - UMC2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .medical-blue { background-color: #005595; }
+        .medical-text { color: #005595; }
+        .medical-border { border-color: #005595; }
+        .accent-red { background-color: #ed1c24; }
+
+        .search-highlight {
+            background-color: #fef08a;
+            font-weight: bold;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        /* Custom scrollbar for tabs */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Search -->
+    <header class="medical-blue text-white shadow-lg sticky-header">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-2 rounded-full hidden sm:block">
+                        <i class="fas fa-hand-holding-medical medical-text text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg md:text-xl font-bold leading-tight">CẨM NANG PHẢN ỨNG NHANH</h1>
+                        <p class="text-[10px] md:text-xs opacity-90 uppercase tracking-wider font-medium">Đơn vị Khám sức khỏe - Bệnh viện Đại học Y Dược Thành phố Hồ Chí Minh Cơ sở 2</p>
+                    </div>
+                </div>
+                
+                <div class="relative w-full md:w-96">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm từ khóa, mẫu câu, tình huống..." 
+                           class="w-full pl-10 pr-4 py-2 rounded-full text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300 shadow-inner">
+                    <i class="fas fa-search absolute left-4 top-3 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6 mb-20">
+        
+        <!-- Navigation Tabs -->
+        <div class="flex overflow-x-auto pb-4 gap-2 no-scrollbar mb-6">
+            <button onclick="filterCategory('all')" class="category-tab px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-medium whitespace-nowrap active-tab">Tất cả</button>
+            <button onclick="filterCategory('appearance')" class="category-tab px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-600 font-medium whitespace-nowrap">Diện mạo & Tác phong</button>
+            <button onclick="filterCategory('greeting')" class="category-tab px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-600 font-medium whitespace-nowrap">Mẫu câu Giao tiếp</button>
+            <button onclick="filterCategory('rules')" class="category-tab px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-600 font-medium whitespace-nowrap">Quy tắc Xưng hô</button>
+            <button onclick="filterCategory('script')" class="category-tab px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-600 font-medium whitespace-nowrap">Kịch bản 5 Bước</button>
+            <button onclick="filterCategory('situations')" class="category-tab px-4 py-2 rounded-full bg-white border border-gray-200 text-gray-600 font-medium whitespace-nowrap">Xử lý Tình huống (30)</button>
+        </div>
+
+        <div id="contentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Content injected via JS -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="hidden text-center py-20">
+            <i class="fas fa-search text-gray-300 text-6xl mb-4"></i>
+            <p class="text-gray-500 text-lg">Không tìm thấy nội dung phù hợp.</p>
+        </div>
+    </main>
+
+    <!-- Footer for Mobile -->
+    <footer class="fixed bottom-0 w-full bg-white border-t border-gray-200 p-3 md:hidden flex justify-around text-xs text-gray-500 z-40">
+        <button onclick="filterCategory('appearance')" class="flex flex-col items-center"><i class="fas fa-user-check text-lg mb-1"></i>Tác phong</button>
+        <button onclick="filterCategory('greeting')" class="flex flex-col items-center"><i class="fas fa-comments text-lg mb-1"></i>Giao tiếp</button>
+        <button onclick="filterCategory('situations')" class="flex flex-col items-center"><i class="fas fa-lightbulb text-lg mb-1"></i>Tình huống</button>
+    </footer>
+
+    <script>
+        const data = [
+            // DIỆN MẠO & TÁC PHONG
+            { cat: 'appearance', title: 'Trang phục', desc: 'Đồng phục phẳng phiu, sạch sẽ theo đúng quy định. Giày cao gót vừa phải hoặc giày bệt tối màu.' },
+            { cat: 'appearance', title: 'Bảng tên', desc: 'Luôn đeo bảng tên ngay ngắn ở ngực trái, thông tin rõ ràng, không bị che khuất.' },
+            { cat: 'appearance', title: 'Diện mạo cá nhân', desc: 'Tóc gọn gàng (nữ búi/cột cao, nam cắt ngắn). Trang điểm nhẹ nhàng, móng tay cắt ngắn.' },
+            { cat: 'appearance', title: 'Nét mặt & Ánh mắt', desc: 'Giữ nét mặt tươi tắn. Eye-contact chân thành. Tuyệt đối không nhìn điện thoại khi khách đang nói.' },
+            { cat: 'appearance', title: 'Đi đứng & Cử chỉ', desc: 'Đi nhẹ nói khẽ. Khi chỉ dẫn, sử dụng cả bàn tay khép kín hướng về phía cần đến, không chỉ bằng một ngón tay.' },
+            { cat: 'appearance', title: 'Tư thế & Vệ sinh', desc: 'Ngồi ngay ngắn. Không dùng điện thoại cá nhân tại khu vực tiếp đón. Giữ bàn làm việc ngăn nắp.' },
+
+            // MẪU CÂU (Chào, Cảm ơn, Xin lỗi)
+            { cat: 'greeting', title: 'Chào hỏi 1', desc: '"Dạ, UMC2 xin chào Anh/Chị ạ."' },
+            { cat: 'greeting', title: 'Chào hỏi 2', desc: '"Chúc Anh/Chị một buổi sáng tốt lành, em có thể hỗ trợ gì cho mình ạ?"' },
+            { cat: 'greeting', title: 'Chào hỏi 3', desc: '"Dạ chào Anh/Chị, mình đã có lịch hẹn trước hay cần đăng ký mới ạ?"' },
+            { cat: 'greeting', title: 'Cảm ơn 1', desc: '"Dạ, chân thành cảm ơn Anh/Chị đã tin tưởng lựa chọn dịch vụ tại UMC2."' },
+            { cat: 'greeting', title: 'Cảm ơn 2', desc: '"Cảm ơn Anh/Chị đã dành thời gian quý báu đến tầm soát sức khỏe định kỳ cùng chúng em."' },
+            { cat: 'greeting', title: 'Xin lỗi 1', desc: '"Dạ, UMC2 thành thật xin lỗi Anh/Chị về sự bất tiện hoặc chậm trễ này."' },
+            { cat: 'greeting', title: 'Xin lỗi 2', desc: '"Em rất xin lỗi vì đã để Anh/Chị phải chờ đợi lâu hơn dự kiến ạ."' },
+
+            // QUY TẮC XƯNG HÔ
+            { cat: 'rules', title: 'Từ đệm lễ phép', desc: 'Luôn sử dụng từ "Dạ" ở đầu câu và từ "Ạ" ở cuối câu để thể hiện sự tôn trọng.' },
+            { cat: 'rules', title: 'Xưng hô khách hàng', desc: 'Gọi bằng "Anh/Chị" kèm tên riêng. Khách lớn tuổi gọi bằng "Cô/Chú/Bác". Nhân viên tự xưng là "Em".' },
+            { cat: 'rules', title: 'Thái độ chuyên nghiệp', desc: 'Giữ khoảng cách 1 cánh tay. Tránh dùng từ chuyên môn khó hiểu. Tránh xưng hô quá thân mật (anh trai/chị gái).' },
+
+            // KỊCH BẢN 5 BƯỚC
+            { cat: 'script', title: 'B1: Đón tiếp & Tư vấn', desc: '"Dạ, UMC2 xin chào Anh/Chị. Anh/Chị đến khám cá nhân hay theo đoàn? Mời Anh/Chị ngồi để em hỗ trợ tư vấn gói khám phù hợp nhất."' },
+            { cat: 'script', title: 'B2: Hướng dẫn CLS', desc: '"Dạ, mời Anh/Chị qua phòng số 5 lấy mẫu, sau đó di chuyển đến khu vực Chẩn đoán hình ảnh cuối hành lang. Vui lòng giữ phiếu để nhân viên hỗ trợ nhanh nhất."' },
+            { cat: 'script', title: 'B3: Hỗ trợ tại phòng khám', desc: '"Dạ mời Anh/Chị vào phòng gặp Bác sĩ [Tên]. Bác sĩ đang xem lại hồ sơ để đưa ra lời khuyên chi tiết nhất cho mình ạ."' },
+            { cat: 'script', title: 'B4: Trả kết quả', desc: '"Dạ đây là hồ sơ kết quả của mình. Bác sĩ lưu ý về [vấn đề] và dặn tái khám sau 6 tháng. Anh/Chị có cần em giải thích thêm không ạ?"' },
+            { cat: 'script', title: 'B5: Tạm biệt', desc: '"Dạ hồ sơ đã hoàn tất. Cảm ơn Anh/Chị đã tin tưởng UMC2. Chúc Anh/Chị thật nhiều sức khỏe và ngày tốt lành. Hẹn gặp lại ạ!"' },
+
+            // 30 TÌNH HUỐNG KHÓ
+            { cat: 'situations', title: '1. Chờ đợi lâu', desc: '"Dạ, em rất xin lỗi Anh/Chị. Do hôm nay khách siêu âm hơi đông, em đã báo ưu tiên cho mình ngay khi có phòng trống. Mời Anh/Chị dùng nước và đợi em ít phút."' },
+            { cat: 'situations', title: '2. Không hài lòng kết quả', desc: '"Dạ em hiểu sự lo lắng của mình. Kết quả được thực hiện trên hệ thống máy móc hiện đại và kiểm chuẩn nghiêm ngặt. Nếu chưa yên tâm, em xin mời Bác sĩ trưởng khoa tư vấn kỹ hơn ạ."' },
+            { cat: 'situations', title: '3. Quên nhịn ăn', desc: '"Dạ tiếc quá, xét nghiệm máu cần nhịn ăn ít nhất 8 tiếng để chính xác. Em xin phép dời lịch lấy máu sang sáng mai, các hạng mục khác mình vẫn làm bình thường ạ."' },
+            { cat: 'situations', title: '4. Bị "nhảy" số thứ tự', desc: '"Dạ chân thành xin lỗi Anh/Chị. Có thể có ca cấp cứu hoặc nhầm lẫn điều phối. Em kiểm tra hệ thống ngay và mời Anh/Chị vào phòng kế tiếp ạ."' },
+            { cat: 'situations', title: '5. Mất phiếu/biên lai', desc: '"Dạ Anh/Chị đừng lo lắng. Em hỗ trợ in lại phiếu mới trên hệ thống ngay bây giờ để mình không bị gián đoạn."' },
+            { cat: 'situations', title: '6. Bác sĩ yêu cầu không có lịch', desc: '"Dạ em rất tiếc Bác sĩ [Tên] không có lịch hôm nay. Tuy nhiên Bác sĩ [Tên đồng nghiệp] cũng là chuyên gia giàu kinh nghiệm sẵn sàng hỗ trợ mình. Anh/Chị muốn em sắp xếp không ạ?"' },
+            { cat: 'situations', title: '7. Sự cố phần mềm/kỹ thuật', desc: '"Dạ hệ thống mạng đang gặp sự cố nhỏ nên việc in kết quả bị chậm. Em rất mong Anh/Chị thông cảm đợi khoảng 10-15 phút, em đang nỗ lực xử lý ngay ạ."' },
+            { cat: 'situations', title: '8. Chi phí gói khám cao', desc: '"Dạ em hiểu băn khoăn của mình. Gói khám này tập trung tầm soát toàn diện với kỹ thuật cao đảm bảo không bỏ sót bệnh lý, là sự đầu tư xứng đáng cho sức khỏe lâu dài ạ."' },
+            { cat: 'situations', title: '9. Thái độ gay gắt, lớn tiếng', desc: '"Dạ, em thấy mình đang rất bức xúc. Em mời Anh/Chị vào phòng riêng để em lắng nghe rõ hơn và tìm cách giải quyết tốt nhất cho mình. Mong Anh/Chị bình tĩnh để em hỗ trợ ạ."' },
+            { cat: 'situations', title: '10. Thực hiện thêm khi đã muộn', desc: '"Dạ em sẵn lòng hỗ trợ. Tuy nhiên vì kỹ thuật này cần chuẩn bị và máy móc cần bảo trì định kỳ, nếu thực hiện ngay có thể không tối ưu. Em xin đặt lịch ưu tiên cho mình sáng mai nhé?"' },
+            { cat: 'situations', title: '11. Sai sót thông tin cá nhân', desc: '"Dạ em thành thật xin lỗi vì sai sót thông tin. Em sẽ cập nhật lại ngay và in lại bản chuẩn chỉ trong 1 phút thôi ạ. Anh/Chị vui lòng kiểm tra lại giúp em nhé."' },
+            { cat: 'situations', title: '12. Sợ kim tiêm/đau', desc: '"Dạ em hiểu cảm giác của mình. Anh/Chị cứ hít thở sâu và nhìn sang hướng khác, em sẽ thực hiện thật nhẹ nhàng. Nếu thấy khó chịu ở đâu, Anh/Chị báo em ngay nhé."' },
+            { cat: 'situations', title: '13. Phàn nàn cơ sở vật chất', desc: '"Dạ em rất tiếc điều này làm mình không thoải mái. Em báo kỹ thuật điều chỉnh nhiệt độ/vệ sinh ngay ạ. Trong lúc chờ, Anh/Chị muốn chuyển sang khu vực ghế ngồi thoáng hơn không?"' },
+            { cat: 'situations', title: '14. Yêu cầu giảm giá', desc: '"Dạ gói khám này đã được tối ưu chi phí nhất rồi ạ. Tuy nhiên, em sẽ kiểm tra xem Anh/Chị có thuộc đối tượng ưu đãi của các chương trình liên kết hiện hành không để hỗ trợ ạ."' },
+            { cat: 'situations', title: '15. Lỡ uống nước/ăn', desc: '"Dạ vì mình lỡ dùng đồ ăn/uống nên kết quả có thể không chính xác. Để đảm bảo quyền lợi, mình vui lòng đợi thêm 2 tiếng hoặc quay lại vào sáng mai để thực hiện riêng mục này nhé."' },
+            { cat: 'situations', title: '16. Phòng chờ quá đông', desc: '"Dạ em xin lỗi vì hôm nay khách hơi đông. Em mời Anh/Chị ra khu vực sảnh chờ dự phòng phía ngoài cho thoáng, khi gần đến lượt em sẽ chủ động sang báo mình ngay ạ."' },
+            { cat: 'situations', title: '17. Hỏi kết quả qua điện thoại', desc: '"Dạ để bảo mật thông tin y tế, em xin phép không báo kết quả chi tiết qua điện thoại ạ. Anh/Chị có thể tra cứu trên App hoặc em hỗ trợ gửi bản cứng về tận nhà cho mình."' },
+            { cat: 'situations', title: '18. Gia đình tranh cãi gói khám', desc: '"Dạ em thấy gia đình mình đang cân nhắc. Dựa trên độ tuổi của [Ông/Bà], em gợi ý gói khám [X] vì tập trung tầm soát bệnh lý phổ biến nhất ở tuổi này, hiệu quả và đúng nhu cầu ạ."' },
+            { cat: 'situations', title: '19. Đòi làm XN không cần thiết', desc: '"Dạ em hiểu mình muốn kiểm tra kỹ. Tuy nhiên dựa trên triệu chứng hiện tại, Bác sĩ nhận thấy hạng mục này chưa cần thiết và gây tốn kém không đáng có. Mình cứ yên tâm theo dõi trước nhé."' },
+            { cat: 'situations', title: '20. Khó tìm phòng/khu vực', desc: '"Dạ em xin lỗi vì sơ đồ làm mình bối rối. Anh/Chị cứ đi thẳng hành lang này đến thang máy số 2 là tới ạ. Để em nhờ bạn nhân viên hỗ trợ dẫn mình đi cho nhanh nhé."' },
+            { cat: 'situations', title: '21. Ưu tiên vì là người quen', desc: '"Dạ, em rất trân trọng mối quan hệ. Tuy nhiên để công bằng cho khách đã chờ từ sớm, Anh/Chị vui lòng đợi theo số thứ tự giúp em. Em sẽ cố gắng hỗ trợ mình nhanh nhất có thể ạ."' },
+            { cat: 'situations', title: '22. Bãi đỗ xe hết chỗ', desc: '"Dạ, em rất xin lỗi sự bất tiện này. Do lượng khách tăng đột biến, em sẽ liên hệ bảo vệ tìm vị trí đỗ thuận tiện nhất hoặc hướng dẫn mình sang khu vực dự phòng ngay bây giờ ạ."' },
+            { cat: 'situations', title: '23. Yêu cầu lấy lại mẫu', desc: '"Dạ em thành thật xin lỗi. Để đảm bảo kết quả chính xác tuyệt đối, Bác sĩ đề nghị hỗ trợ lấy lại mẫu xét nghiệm ạ. Em sẽ ưu tiên thực hiện hạng mục này ngay để mình không phải chờ nữa."' },
+            { cat: 'situations', title: '24. Không hài lòng suất ăn nhẹ', desc: '"Dạ em cảm ơn góp ý của mình và xin lỗi vì món ăn chưa hợp khẩu vị. Em sẽ báo bộ phận cải thiện thực đơn. Hiện tại em có thể đổi sang [món khác] cho mình dùng tạm không ạ?"' },
+            { cat: 'situations', title: '25. Đợi lâu sau khi xong XN', desc: '"Dạ em hiểu mình đang nóng lòng. Hiện Bác sĩ đang phân tích kỹ các chỉ số để đưa ra lời khuyên chính xác nhất. Mong Anh/Chị thông cảm đợi thêm ít phút, em sẽ báo ngay khi có hồ sơ."' },
+            { cat: 'situations', title: '26. Voucher ưu đãi hết hạn', desc: '"Dạ rất tiếc phiếu này đã quá hạn nên em không thể kích hoạt được ạ. Tuy nhiên em sẽ kiểm tra xem mình có thuộc đối tượng ưu đãi nào khác trong chương trình hiện tại không nhé."' },
+            { cat: 'situations', title: '27. Nhân viên nói chuyện ồn ào', desc: '"Dạ em thành thật xin lỗi vì sự thiếu sót của nhân viên đã làm phiền mình. Em sẽ nhắc nhở bộ phận giữ yên lặng ngay lập tức để đảm bảo không gian yên tĩnh cho Anh/Chị ạ."' },
+            { cat: 'situations', title: '28. Thay đổi gói khám khi đang làm', desc: '"Dạ việc thay đổi lúc này cần điều chỉnh hệ thống nên có thể làm mình mất thêm chút thời gian chờ. Nếu Anh/Chị vẫn muốn đổi để phù hợp hơn, em sẽ hỗ trợ làm thủ tục ngay ạ."' },
+            { cat: 'situations', title: '29. Bác sĩ tư vấn quá nhanh', desc: '"Dạ em xin lỗi. Có lẽ do khối lượng thông tin nhiều nên Bác sĩ truyền đạt hơi nhanh. Em xin phép tóm tắt lại ý chính hoặc mời Bác sĩ giải thích thêm những phần mình chưa rõ ạ."' },
+            { cat: 'situations', title: '30. Đòi hoàn tiền phút chót', desc: '"Dạ em hiểu mình quyết định không thực hiện hạng mục này nữa. Em hỗ trợ làm thủ tục hoàn trả chi phí phần chưa sử dụng ngay tại quầy thu ngân. Anh/Chị đợi em vài phút nhé."' }
+        ];
+
+        let currentFilter = 'all';
+
+        function renderContent(filter = 'all', keyword = '') {
+            const grid = document.getElementById('contentGrid');
+            const noResults = document.getElementById('noResults');
+            grid.innerHTML = '';
+            
+            const filtered = data.filter(item => {
+                const matchesCat = filter === 'all' || item.cat === filter;
+                const matchesKey = item.title.toLowerCase().includes(keyword.toLowerCase()) || 
+                                 item.desc.toLowerCase().includes(keyword.toLowerCase());
+                return matchesCat && matchesKey;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                filtered.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'category-card bg-white p-5 rounded-xl shadow-sm border-l-4 medical-border hover:shadow-md transition-all flex flex-col justify-between';
+                    
+                    let displayTitle = item.title;
+                    let displayDesc = item.desc;
+                    
+                    if (keyword) {
+                        const regex = new RegExp(`(${keyword})`, 'gi');
+                        displayTitle = item.title.replace(regex, '<span class="search-highlight">$1</span>');
+                        displayDesc = item.desc.replace(regex, '<span class="search-highlight">$1</span>');
+                    }
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex items-start justify-between mb-2">
+                                <span class="text-[10px] font-bold uppercase text-gray-400 tracking-widest">${getCategoryName(item.cat)}</span>
+                                <i class="fas ${getCategoryIcon(item.cat)} text-blue-200"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 text-base mb-2">${displayTitle}</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed italic border-t border-dashed pt-2 mt-2">${displayDesc}</p>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="copyText('${item.desc.replace(/'/g, "\\'")}')" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1 rounded-md transition-colors">
+                                <i class="far fa-copy mr-1"></i> SAO CHÉP
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function getCategoryName(cat) {
+            const names = { appearance: 'Tác phong', greeting: 'Mẫu câu', rules: 'Quy tắc', script: 'Kịch bản', situations: 'Tình huống' };
+            return names[cat] || '';
+        }
+
+        function getCategoryIcon(cat) {
+            const icons = { appearance: 'fa-user-check', greeting: 'fa-comments', rules: 'fa-gavel', script: 'fa-list-ol', situations: 'fa-exclamation-circle' };
+            return icons[cat] || 'fa-info-circle';
+        }
+
+        function filterCategory(cat) {
+            currentFilter = cat;
+            const tabs = document.querySelectorAll('.category-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('bg-blue-100', 'text-blue-700', 'active-tab');
+                tab.classList.add('bg-white', 'text-gray-600');
+            });
+            event.target.classList.add('bg-blue-100', 'text-blue-700', 'active-tab');
+            renderContent(cat, document.getElementById('searchInput').value);
+        }
+
+        function copyText(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full text-sm z-50 shadow-xl font-medium';
+            toast.innerHTML = '<i class="fas fa-check-circle mr-2 text-green-400"></i> Đã sao chép kịch bản!';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderContent(currentFilter, e.target.value);
+        });
+
+        window.onload = () => renderContent();
+    </script>
+</body>
+</html>
